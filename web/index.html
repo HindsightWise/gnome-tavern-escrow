@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="gallery" data-archetype="gallery">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gnome Tavern — Gno.land Verifiable Quest &amp; Escrow Console</title>
+  <style>
+    :root {
+      --bg-canvas: #faf8f5;
+      --bg-surface: #ffffff;
+      --bg-well: #f3f0ea;
+      --bg: var(--bg-canvas);
+      --surface: var(--bg-surface);
+      --surface-alt: var(--bg-well);
+      --ink: #18181b;
+      --ink-muted: #4b4b52;
+      --border: #d6d3cd;
+      --accent: #7f1d1d;
+      --accent-ink: #ffffff;
+      --forest: #14532d;
+      --slate: #1e3a5f;
+      --serif: "Newsreader", Georgia, "Times New Roman", serif;
+      --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .page-shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 64px;
+    }
+
+    header.masthead {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 6px;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      margin: 0 0 8px;
+      line-height: 1.15;
+      color: var(--ink);
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 68ch;
+      color: var(--ink-muted);
+      font-size: 15px;
+    }
+
+    nav.realm-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    nav.realm-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 13px;
+      transition: background 120ms ease, border-color 120ms ease;
+    }
+
+    nav.realm-links a:hover,
+    nav.realm-links a:focus-visible {
+      border-color: var(--ink);
+      background: var(--surface-alt);
+      outline: 2px solid var(--slate);
+      outline-offset: 2px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .specimen-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+      box-shadow: none;
+    }
+
+    .kpi-label {
+      font-family: var(--mono);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-muted);
+      margin: 0 0 6px;
+    }
+
+    .kpi-value {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      margin: 0;
+      color: var(--ink);
+    }
+
+    kbd.keycap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 5px;
+      margin-left: 8px;
+      border: 1px solid currentColor;
+      border-bottom-width: 2px;
+      border-radius: 3px;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1;
+      opacity: 0.88;
+    }
+
+    .kpi-value.ok {
+      color: var(--forest);
+    }
+
+    .kpi-meta {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin: 6px 0 0;
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 900px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    h2 {
+      font-family: var(--serif);
+      font-size: 22px;
+      margin: 0 0 12px;
+      color: var(--ink);
+    }
+
+    h3 {
+      font-family: var(--serif);
+      font-size: 18px;
+      margin: 0 0 10px;
+      color: var(--ink);
+    }
+
+    .section-copy {
+      margin: 0 0 16px;
+      font-size: 14px;
+      color: var(--ink-muted);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    label.field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--slate);
+      outline-offset: 1px;
+      border-color: var(--ink);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      min-width: 44px;
+      padding: 10px 16px;
+      border: 1px solid var(--ink);
+      background: var(--surface);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 90ms ease, background 120ms ease, color 120ms ease;
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-ink);
+    }
+
+    button.secondary {
+      background: var(--slate);
+      border-color: var(--slate);
+      color: #ffffff;
+    }
+
+    button:hover {
+      background: var(--surface-alt);
+    }
+
+    button.primary:hover {
+      background: #631717;
+    }
+
+    button.secondary:hover {
+      background: #152b47;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    button:focus-visible {
+      outline: 2px solid var(--slate);
+      outline-offset: 2px;
+    }
+
+    .quest-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quest-row {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+
+    .quest-row:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .quest-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .quest-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border: 1px solid var(--ink);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      background: var(--surface-alt);
+      color: var(--ink);
+    }
+
+    .status-pill.settled {
+      border-color: var(--forest);
+      color: var(--forest);
+      background: #edf7f0;
+    }
+
+    .status-pill.disputed {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: #fdf2f2;
+    }
+
+    .quest-meta {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin: 0 0 8px;
+      word-break: break-all;
+    }
+
+    pre.render-box {
+      margin: 0;
+      padding: 14px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--ink);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .schematic-wrap {
+      width: 100%;
+      overflow-x: auto;
+      padding-top: 6px;
+    }
+
+    .schematic-wrap svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .event-log {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink);
+      margin: 12px 0 0;
+      padding-left: 18px;
+    }
+
+    .event-log li {
+      margin-bottom: 4px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-muted);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">Gno.land Realm · gno.land/r/gnometavern/tavern</p>
+        <h1>Gnome Tavern Quests &amp; Verifiable Escrow</h1>
+        <p class="subtitle">
+          Deterministic on-chain work orders on Gno.land with strict ugnot escrow conservation,
+          64-hex SHA-256 artifact proofs, deadline refunds, and arbitrator dispute resolution.
+        </p>
+      </div>
+      <nav class="realm-links" aria-label="Realm documentation links">
+        <a href="https://docs.gno.land" target="_blank" rel="noopener">Gno.land Docs</a>
+        <a href="https://faucet.gno.land" target="_blank" rel="noopener">Testnet Faucet</a>
+        <a href="https://github.com/gnolang/gno" target="_blank" rel="noopener">gnolang/gno</a>
+      </nav>
+    </header>
+
+    <main>
+      <section aria-label="Escrow conservation metrics">
+        <div class="kpi-grid">
+          <article class="specimen-card">
+            <p class="kpi-label">Active Escrow Locked</p>
+            <p class="kpi-value" id="kpi-locked">1,000,000 ugnot</p>
+            <p class="kpi-meta" id="kpi-height">Chain Height: 100</p>
+          </article>
+          <article class="specimen-card">
+            <p class="kpi-label">Cumulative Settled</p>
+            <p class="kpi-value" id="kpi-paid">750,000 ugnot</p>
+            <p class="kpi-meta" id="kpi-quests">Quests Posted: 2</p>
+          </article>
+          <article class="specimen-card">
+            <p class="kpi-label">Conservation Invariant</p>
+            <p class="kpi-value ok" id="kpi-invariant">HOLDING</p>
+            <p class="kpi-meta">totalLocked == sum(active)</p>
+          </article>
+          <article class="specimen-card">
+            <p class="kpi-label">Realm Verification</p>
+            <p class="kpi-value ok">3 / 3 PASS</p>
+            <p class="kpi-meta">gno test + negative control</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="workspace-grid" aria-label="Interactive quest ledger and gnoweb renderer">
+        <article class="specimen-card">
+          <h2>Post New Escrowed Quest</h2>
+          <p class="section-copy">
+            Simulates <code>PostQuest(cur, title, specHash, criteria, arbitrator, deadlineHeight)</code>
+            with Checks-Effects-Interactions escrow locking.
+          </p>
+          <div class="form-grid">
+            <label class="field">
+              Quest Title
+              <input id="inp-title" type="text" value="Verify Gno Render Pagination" />
+            </label>
+            <label class="field">
+              Bounty (ugnot)
+              <input id="inp-bounty" type="number" min="1000" step="1000" value="500000" />
+            </label>
+            <label class="field">
+              Deadline Delta (blocks)
+              <input id="inp-delta" type="number" min="5" step="5" value="40" />
+            </label>
+          </div>
+          <div class="btn-row">
+            <button id="btn-post" class="primary" type="button">PostQuest (Lock ugnot)<kbd class="keycap">P</kbd></button>
+            <button id="btn-step-height" type="button">Advance +25 Blocks<kbd class="keycap">B</kbd></button>
+            <button id="btn-reset" type="button">Reset Ledger<kbd class="keycap">R</kbd></button>
+          </div>
+
+          <h3 style="margin-top: 22px;">On-Chain Quest State Machine</h3>
+          <div class="quest-list" id="quest-list"></div>
+        </article>
+
+        <article class="specimen-card">
+          <h2>Live gnoweb Render() Output</h2>
+          <p class="section-copy">
+            Exact deterministic Markdown emitted by <code>tavern.Render(path)</code> for Gno.land web portals.
+          </p>
+          <div class="btn-row" style="margin-bottom: 12px;">
+            <button id="btn-route-home" class="secondary" type="button">Render("")</button>
+            <button id="btn-route-q1" type="button">Render("quest/1")</button>
+            <button id="btn-route-guild" type="button">Render("guild")</button>
+          </div>
+          <pre class="render-box" id="render-output"></pre>
+
+          <h3 style="margin-top: 20px;">Chain Events Emitted</h3>
+          <ul class="event-log" id="event-log"></ul>
+        </article>
+      </section>
+
+      <section class="specimen-card" aria-label="Deterministic escrow state transition diagram">
+        <h2>Deterministic Escrow State Transition Graph</h2>
+        <p class="section-copy">
+          Every transition enforces strict role authorization (Sponsor, Worker, Arbitrator) and updates
+          <code>totalLocked</code> before invoking <code>banker.SendCoins</code>.
+        </p>
+        <div class="schematic-wrap">
+          <svg viewBox="0 0 1000 180" role="img" aria-label="Gnome Tavern Escrow State Machine">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#18181b" />
+              </marker>
+            </defs>
+            <rect x="20" y="60" width="130" height="52" fill="#ffffff" stroke="#18181b" stroke-width="1.5" />
+            <text x="85" y="91" text-anchor="middle" font-family="ui-monospace, monospace" font-size="14" font-weight="700" fill="#18181b">OPEN</text>
+
+            <line x1="150" y1="86" x2="215" y2="86" stroke="#18181b" stroke-width="1.5" marker-end="url(#arrow)" />
+            <text x="182" y="76" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#4b4b52">Claim</text>
+
+            <rect x="220" y="60" width="140" height="52" fill="#ffffff" stroke="#18181b" stroke-width="1.5" />
+            <text x="290" y="91" text-anchor="middle" font-family="ui-monospace, monospace" font-size="14" font-weight="700" fill="#18181b">CLAIMED</text>
+
+            <line x1="360" y1="86" x2="435" y2="86" stroke="#18181b" stroke-width="1.5" marker-end="url(#arrow)" />
+            <text x="397" y="76" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#4b4b52">SHA-256</text>
+
+            <rect x="440" y="60" width="150" height="52" fill="#ffffff" stroke="#18181b" stroke-width="1.5" />
+            <text x="515" y="91" text-anchor="middle" font-family="ui-monospace, monospace" font-size="14" font-weight="700" fill="#18181b">SUBMITTED</text>
+
+            <line x1="590" y1="74" x2="775" y2="42" stroke="#14532d" stroke-width="1.5" marker-end="url(#arrow)" />
+            <text x="680" y="45" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#14532d">ApproveAndRelease</text>
+
+            <rect x="780" y="16" width="180" height="48" fill="#edf7f0" stroke="#14532d" stroke-width="1.5" />
+            <text x="870" y="45" text-anchor="middle" font-family="ui-monospace, monospace" font-size="14" font-weight="700" fill="#14532d">SETTLED (Paid)</text>
+
+            <line x1="590" y1="98" x2="645" y2="128" stroke="#7f1d1d" stroke-width="1.5" marker-end="url(#arrow)" />
+            <text x="635" y="106" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#7f1d1d">Dispute</text>
+
+            <rect x="650" y="114" width="130" height="48" fill="#fdf2f2" stroke="#7f1d1d" stroke-width="1.5" />
+            <text x="715" y="143" text-anchor="middle" font-family="ui-monospace, monospace" font-size="13" font-weight="700" fill="#7f1d1d">DISPUTED</text>
+
+            <line x1="780" y1="138" x2="825" y2="138" stroke="#18181b" stroke-width="1.5" marker-end="url(#arrow)" />
+            <rect x="830" y="114" width="150" height="48" fill="#f3f0ea" stroke="#18181b" stroke-width="1.5" />
+            <text x="905" y="143" text-anchor="middle" font-family="ui-monospace, monospace" font-size="13" font-weight="700" fill="#18181b">REFUNDED</text>
+
+            <path d="M 85 112 L 85 154 L 825 154" fill="none" stroke="#4b4b52" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrow)" />
+            <text x="340" y="170" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#4b4b52">CancelExpired (ChainHeight &gt; DeadlineHeight)</text>
+          </svg>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>DoraHacks #2470 · Gnome Tavern Hackathon (Gno.land)</span>
+      <span>Package: gno.land/r/gnometavern/tavern · Pure Gno 0.9</span>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      const SPEC_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+      const PROOF_HASH = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
+      const SPONSOR = "g1sponsor0000000000000000000000000000001";
+      const WORKER = "g1worker00000000000000000000000000000002";
+      const ARBITRATOR = "g1arbitrator0000000000000000000000000003";
+
+      let state = {};
+
+      function initState() {
+        state = {
+          height: 100,
+          route: "",
+          totalLocked: 1000000,
+          totalPaid: 750000,
+          events: [
+            "QuestPosted(quest_id=1, bounty_ugnot=750000)",
+            "QuestSettled(quest_id=1, worker=" + WORKER + ", bounty_ugnot=750000)",
+            "QuestPosted(quest_id=2, bounty_ugnot=1000000)"
+          ],
+          guild: [
+            { address: WORKER, completed: 1, disputesWon: 0, earnedUgnot: 750000 }
+          ],
+          quests: [
+            {
+              id: 1,
+              title: "Deterministic Gno Escrow Verifier",
+              specHash: SPEC_HASH,
+              criteria: "All unit tests and conservation invariants pass",
+              sponsor: SPONSOR,
+              arbitrator: ARBITRATOR,
+              worker: WORKER,
+              bounty: 750000,
+              deadline: 150,
+              status: "SETTLED",
+              proofHash: PROOF_HASH,
+              proofURI: "https://github.com/HindsightWise/gnome-tavern"
+            },
+            {
+              id: 2,
+              title: "Cross-Realm gnoweb Markdown Renderer",
+              specHash: SPEC_HASH,
+              criteria: "Render routes '', 'quest/<id>', and 'guild' cleanly",
+              sponsor: SPONSOR,
+              arbitrator: ARBITRATOR,
+              worker: "",
+              bounty: 1000000,
+              deadline: 160,
+              status: "OPEN",
+              proofHash: "",
+              proofURI: ""
+            }
+          ]
+        };
+      }
+
+      function computeActiveSum() {
+        return state.quests.reduce((acc, q) => {
+          if (q.status === "OPEN" || q.status === "CLAIMED" || q.status === "SUBMITTED" || q.status === "DISPUTED") {
+            return acc + q.bounty;
+          }
+          return acc;
+        }, 0);
+      }
+
+      function renderMarkdown(path) {
+        if (path === "guild") {
+          let md = "# Gnome Tavern Guild Reputation Board\n\n";
+          md += "| Builder | Completed | Disputes Won | Earned (ugnot) |\n";
+          md += "| :--- | ---: | ---: | ---: |\n";
+          state.guild.forEach((g) => {
+            md += `| \`${g.address}\` | ${g.completed} | ${g.disputesWon} | ${g.earnedUgnot} |\n`;
+          });
+          return md;
+        }
+        if (path.startsWith("quest/")) {
+          const id = Number(path.slice(6));
+          const q = state.quests.find((item) => item.id === id);
+          if (!q) return "# Quest Not Found\n";
+          let md = `# Quest #${q.id}: ${q.title}\n\n`;
+          md += `- **Status:** ${q.status}\n`;
+          md += `- **Bounty:** ${q.bounty} ugnot\n`;
+          md += `- **Sponsor:** \`${q.sponsor}\`\n`;
+          md += `- **Arbitrator:** \`${q.arbitrator}\`\n`;
+          if (q.worker) md += `- **Worker:** \`${q.worker}\`\n`;
+          md += `- **Spec SHA-256:** \`${q.specHash}\`\n`;
+          md += `- **Deadline Height:** ${q.deadline}\n`;
+          if (q.proofHash) md += `- **Submitted Proof SHA-256:** \`${q.proofHash}\`\n`;
+          return md;
+        }
+        const ok = state.totalLocked === computeActiveSum();
+        let md = "# Gnome Tavern Quests & Verifiable Escrow\n\n";
+        md += `- **Quests Posted:** ${state.quests.length}\n`;
+        md += `- **Active Escrow Locked:** ${state.totalLocked} ugnot\n`;
+        md += `- **Cumulative Settled:** ${state.totalPaid} ugnot\n`;
+        md += `- **Conservation Check:** \`totalLocked == sum(active)\` -> \`${ok}\`\n\n`;
+        md += "| ID | Title | Bounty (ugnot) | Status | Deadline |\n";
+        md += "| :--- | :--- | ---: | :--- | ---: |\n";
+        [...state.quests].reverse().forEach((q) => {
+          md += `| #${q.id} | ${q.title} | ${q.bounty} | ${q.status} | ${q.deadline} |\n`;
+        });
+        return md;
+      }
+
+      function transitionQuest(id, action) {
+        const q = state.quests.find((item) => item.id === id);
+        if (!q) return;
+        if (action === "claim" && q.status === "OPEN") {
+          q.worker = WORKER;
+          q.status = "CLAIMED";
+          state.events.unshift(`QuestClaimed(quest_id=${q.id}, worker=${WORKER})`);
+        } else if (action === "submit" && q.status === "CLAIMED") {
+          q.proofHash = PROOF_HASH;
+          q.proofURI = "ipfs://bafyproof" + q.id;
+          q.status = "SUBMITTED";
+          state.events.unshift(`ProofSubmitted(quest_id=${q.id}, sha256=${PROOF_HASH.slice(0, 12)}...)`);
+        } else if (action === "approve" && q.status === "SUBMITTED") {
+          q.status = "SETTLED";
+          state.totalLocked -= q.bounty;
+          state.totalPaid += q.bounty;
+          state.guild[0].completed += 1;
+          state.guild[0].earnedUgnot += q.bounty;
+          state.events.unshift(`QuestSettled(quest_id=${q.id}, bounty_ugnot=${q.bounty})`);
+        } else if (action === "dispute" && q.status === "SUBMITTED") {
+          q.status = "DISPUTED";
+          state.events.unshift(`QuestDisputed(quest_id=${q.id})`);
+        } else if (action === "resolve_worker" && q.status === "DISPUTED") {
+          q.status = "SETTLED";
+          state.totalLocked -= q.bounty;
+          state.totalPaid += q.bounty;
+          state.guild[0].completed += 1;
+          state.guild[0].disputesWon += 1;
+          state.guild[0].earnedUgnot += q.bounty;
+          state.events.unshift(`DisputeResolved(quest_id=${q.id}, recipient=worker, amount=${q.bounty})`);
+        } else if (action === "expire" && (q.status === "OPEN" || q.status === "CLAIMED") && state.height > q.deadline) {
+          q.status = "REFUNDED";
+          state.totalLocked -= q.bounty;
+          state.events.unshift(`QuestRefunded(quest_id=${q.id}, refund_ugnot=${q.bounty})`);
+        }
+        renderUI();
+      }
+
+      function renderUI() {
+        const activeSum = computeActiveSum();
+        const holding = state.totalLocked === activeSum;
+        document.getElementById("kpi-locked").textContent = state.totalLocked.toLocaleString() + " ugnot";
+        document.getElementById("kpi-paid").textContent = state.totalPaid.toLocaleString() + " ugnot";
+        document.getElementById("kpi-height").textContent = "Chain Height: " + state.height;
+        document.getElementById("kpi-quests").textContent = "Quests Posted: " + state.quests.length;
+        const invEl = document.getElementById("kpi-invariant");
+        invEl.textContent = holding ? "HOLDING" : "VIOLATED";
+
+        const listEl = document.getElementById("quest-list");
+        listEl.textContent = "";
+        [...state.quests].reverse().forEach((q) => {
+          const row = document.createElement("div");
+          row.className = "quest-row";
+          const pillClass = q.status === "SETTLED" ? "status-pill settled" : (q.status === "DISPUTED" ? "status-pill disputed" : "status-pill");
+
+          const head = document.createElement("div");
+          head.className = "quest-head";
+
+          const titleSpan = document.createElement("span");
+          titleSpan.className = "quest-title";
+          titleSpan.textContent = `#${q.id} · ${q.title}`;
+
+          const pillSpan = document.createElement("span");
+          pillSpan.className = pillClass;
+          pillSpan.textContent = q.status;
+
+          head.appendChild(titleSpan);
+          head.appendChild(pillSpan);
+
+          const meta = document.createElement("p");
+          meta.className = "quest-meta";
+          meta.textContent = `Bounty: ${q.bounty.toLocaleString()} ugnot · Deadline: h=${q.deadline} · Spec: ${q.specHash.slice(0, 16)}...`;
+
+          row.appendChild(head);
+          row.appendChild(meta);
+          const actions = document.createElement("div");
+          actions.className = "btn-row";
+          if (q.status === "OPEN") {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = "ClaimQuest";
+            b.addEventListener("click", () => transitionQuest(q.id, "claim"));
+            actions.appendChild(b);
+          }
+          if (q.status === "CLAIMED") {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = "SubmitProof";
+            b.addEventListener("click", () => transitionQuest(q.id, "submit"));
+            actions.appendChild(b);
+          }
+          if (q.status === "SUBMITTED") {
+            const b1 = document.createElement("button");
+            b1.type = "button";
+            b1.className = "primary";
+            b1.textContent = "ApproveAndRelease";
+            b1.addEventListener("click", () => transitionQuest(q.id, "approve"));
+            actions.appendChild(b1);
+
+            const b2 = document.createElement("button");
+            b2.type = "button";
+            b2.textContent = "OpenDispute";
+            b2.addEventListener("click", () => transitionQuest(q.id, "dispute"));
+            actions.appendChild(b2);
+          }
+          if (q.status === "DISPUTED") {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "primary";
+            b.textContent = "ResolveDispute (Award Worker)";
+            b.addEventListener("click", () => transitionQuest(q.id, "resolve_worker"));
+            actions.appendChild(b);
+          }
+          if ((q.status === "OPEN" || q.status === "CLAIMED") && state.height > q.deadline) {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = "CancelExpired";
+            b.addEventListener("click", () => transitionQuest(q.id, "expire"));
+            actions.appendChild(b);
+          }
+          if (actions.children.length > 0) {
+            row.appendChild(actions);
+          }
+          listEl.appendChild(row);
+        });
+
+        document.getElementById("render-output").textContent = renderMarkdown(state.route);
+
+        const logEl = document.getElementById("event-log");
+        logEl.innerHTML = "";
+        state.events.slice(0, 6).forEach((ev) => {
+          const li = document.createElement("li");
+          li.textContent = ev;
+          logEl.appendChild(li);
+        });
+      }
+
+      document.getElementById("btn-post").addEventListener("click", () => {
+        const title = document.getElementById("inp-title").value.trim() || "Untitled Quest";
+        const bounty = Math.max(1000, Number(document.getElementById("inp-bounty").value) || 500000);
+        const delta = Math.max(5, Number(document.getElementById("inp-delta").value) || 40);
+        const nextId = state.quests.length + 1;
+        state.quests.push({
+          id: nextId,
+          title,
+          specHash: SPEC_HASH,
+          criteria: "Deterministic gno test pass",
+          sponsor: SPONSOR,
+          arbitrator: ARBITRATOR,
+          worker: "",
+          bounty,
+          deadline: state.height + delta,
+          status: "OPEN",
+          proofHash: "",
+          proofURI: ""
+        });
+        state.totalLocked += bounty;
+        state.events.unshift(`QuestPosted(quest_id=${nextId}, bounty_ugnot=${bounty})`);
+        renderUI();
+      });
+
+      document.getElementById("btn-step-height").addEventListener("click", () => {
+        state.height += 25;
+        renderUI();
+      });
+
+      document.getElementById("btn-reset").addEventListener("click", () => {
+        initState();
+        renderUI();
+      });
+
+      document.getElementById("btn-route-home").addEventListener("click", () => {
+        state.route = "";
+        renderUI();
+      });
+      document.getElementById("btn-route-q1").addEventListener("click", () => {
+        state.route = "quest/1";
+        renderUI();
+      });
+      document.getElementById("btn-route-guild").addEventListener("click", () => {
+        state.route = "guild";
+        renderUI();
+      });
+
+      initState();
+      renderUI();
+    })();
+  </script>
+</body>
+</html>
